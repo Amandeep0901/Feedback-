@@ -279,52 +279,61 @@ message:"Best Beat Coffee I've had."
 name:"Mohit",
 rating:4,
 message:"Loved the Mango syrup."
-},
-
-{
-name:"Sneha",
-rating:5,
-message:"Packaging was premium."
-},
-
-{
-name:"Aman",
-rating:5,
-message:"Highly recommended!"
-},
-
-{
-name:"Ritika",
-rating:5,
-message:"Rose syrup is delicious."
-},
-
-{
-name:"Karan",
-rating:4,
-message:"Good quality and fast delivery."
 }
 
 ];
 
+/* ADD THIS HERE */
+
+const TIMES = [
+    "Just now",
+    "30 sec ago",
+    "1 min ago",
+    "2 min ago",
+    "5 min ago",
+    "8 min ago"
+];
+
+/* THEN THIS */
+
 function loadLiveReviews(){
 
-averageRating.textContent="4.9";
-
-totalReviews.textContent="1284";
+    averageRating.textContent = "4.9";
+    totalReviews.textContent = "1284";
 
 }
 
 function startFloatingReviews(){
 
-if(!floatingReviews) return;
+    if(!floatingReviews) return;
 
-const MAX_REVIEWS = 5;
+    setInterval(()=>{
 
-setInterval(() => {
+        if(floatingReviews.children.length >= 5)
+            return;
 
-    if (floatingReviews.children.length >= MAX_REVIEWS)
-        return;
+        spawnReview();
+
+    },8000);
+
+}
+
+/* spawnReview starts here */
+
+function spawnReview(){
+
+    const data = reviews[Math.floor(Math.random()*reviews.length)];
+
+    /* ADD THIS LINE */
+
+    const randomTime =
+        TIMES[Math.floor(Math.random()*TIMES.length)];
+
+    const card = document.createElement("div");
+
+    card.className = "review-popup";
+
+    ...
 
     spawnReview();
 
@@ -350,7 +359,7 @@ card.innerHTML=`
 
 <div class="review-name">${data.name}</div>
 
-<div class="review-time">Just now</div>
+<div class="review-time">${randomTime}</div>
 
 </div>
 
