@@ -457,3 +457,369 @@ a { color: inherit; }
   .feedback-card { padding: var(--sp-7); }
 }
  
+/* ===========================================================
+   RATING SUMMARY
+=========================================================== */
+
+.rating-summary{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:22px;
+    text-align:center;
+    margin:0 0 34px;
+    box-shadow:0 12px 28px rgba(0,0,0,.06);
+}
+
+.rating-stars{
+    color:#FFC107;
+    font-size:1.7rem;
+    letter-spacing:4px;
+    margin-bottom:10px;
+}
+
+.rating-score{
+    font-family:var(--font-display);
+    font-size:2.3rem;
+    font-weight:700;
+    color:var(--espresso);
+    line-height:1;
+}
+
+.rating-score small{
+    font-size:1rem;
+    color:#777;
+}
+
+.rating-count{
+    margin-top:10px;
+    font-size:.95rem;
+    color:var(--text-soft);
+    font-weight:500;
+}
+
+.rating-count span{
+    color:var(--red);
+    font-weight:700;
+}
+
+
+/* ===========================================================
+   FLOATING LIVE REVIEWS
+=========================================================== */
+
+#floatingReviews{
+
+    position:fixed;
+    inset:0;
+
+    pointer-events:none;
+
+    z-index:999;
+
+    overflow:hidden;
+
+}
+
+.review-popup{
+
+    position:absolute;
+
+    width:310px;
+
+    background:#fff;
+
+    border-radius:22px;
+
+    padding:18px;
+
+    box-shadow:
+    0 25px 60px rgba(0,0,0,.18);
+
+    border:1px solid rgba(255,255,255,.55);
+
+    backdrop-filter:blur(14px);
+
+    animation:
+    popupIn .6s var(--ease),
+    popupOut .6s var(--ease) forwards;
+
+}
+
+.review-popup.hide{
+
+    animation:popupOut .5s forwards;
+
+}
+
+.review-top{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:8px;
+
+}
+
+.review-name{
+
+    font-weight:700;
+
+    color:var(--espresso);
+
+    font-size:.95rem;
+
+}
+
+.review-time{
+
+    font-size:.72rem;
+
+    color:#999;
+
+}
+
+.review-stars{
+
+    color:#FFC107;
+
+    font-size:.95rem;
+
+    margin-bottom:8px;
+
+}
+
+.review-message{
+
+    color:#555;
+
+    line-height:1.45;
+
+    font-size:.88rem;
+
+}
+
+@keyframes popupIn{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(40px) scale(.85);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0) scale(1);
+
+    }
+
+}
+
+@keyframes popupOut{
+
+    to{
+
+        opacity:0;
+
+        transform:translateY(-25px) scale(.92);
+
+    }
+
+}
+
+
+/* ===========================================================
+   PREMIUM FOOTER
+=========================================================== */
+
+.footer{
+
+    padding:70px 20px;
+
+}
+
+.footer-logo{
+
+    width:170px;
+
+    margin:auto;
+
+    margin-bottom:26px;
+
+}
+
+.footer-address{
+
+    color:rgba(255,255,255,.75);
+
+    margin-bottom:28px;
+
+    line-height:1.7;
+
+}
+
+.footer-buttons{
+
+    display:flex;
+
+    justify-content:center;
+
+    flex-wrap:wrap;
+
+    gap:14px;
+
+    margin-bottom:25px;
+
+}
+
+.footer-btn{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding:12px 22px;
+
+    border-radius:999px;
+
+    text-decoration:none;
+
+    color:#fff;
+
+    font-weight:600;
+
+    transition:.25s;
+
+    backdrop-filter:blur(12px);
+
+    background:rgba(255,255,255,.08);
+
+    border:1px solid rgba(255,255,255,.15);
+
+}
+
+.footer-btn:hover{
+
+    transform:translateY(-4px);
+
+    background:rgba(255,255,255,.14);
+
+}
+
+.footer-btn i{
+
+    font-size:1.05rem;
+
+}
+
+.footer-btn.whatsapp{
+
+    background:#25D366;
+
+}
+
+.footer-btn.instagram{
+
+    background:#E1306C;
+
+}
+
+.footer-btn.email{
+
+    background:#EA4335;
+
+}
+
+.footer-btn.catalogue{
+
+    background:#E8B860;
+
+    color:#222;
+
+}
+
+.footer-since{
+
+    margin-top:18px;
+
+    font-size:.85rem;
+
+    color:rgba(255,255,255,.5);
+
+}
+
+
+/* ===========================================================
+   MOBILE
+=========================================================== */
+
+@media(max-width:768px){
+
+.review-popup{
+
+    width:270px;
+
+    padding:16px;
+
+}
+
+.rating-summary{
+
+    padding:18px;
+
+}
+
+.rating-score{
+
+    font-size:2rem;
+
+}
+
+.footer-buttons{
+
+    flex-direction:column;
+
+    align-items:center;
+
+}
+
+.footer-btn{
+
+    width:250px;
+
+    justify-content:center;
+
+}
+
+}
+
+@media(max-width:480px){
+
+.review-popup{
+
+    width:240px;
+
+}
+
+.rating-stars{
+
+    font-size:1.35rem;
+
+}
+
+.rating-score{
+
+    font-size:1.8rem;
+
+}
+
+}
