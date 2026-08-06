@@ -319,13 +319,16 @@ function startFloatingReviews(){
 
 if(!floatingReviews) return;
 
-setInterval(()=>{
+const MAX_REVIEWS = 5;
 
-if(floatingReviews.children.length>=5) return;
+setInterval(() => {
 
-spawnReview();
+    if (floatingReviews.children.length >= MAX_REVIEWS)
+        return;
 
-},2500);
+    spawnReview();
+
+}, 8000); // New review every 8 seconds
 
 }
 
@@ -371,13 +374,17 @@ setTimeout(()=>{
 
 card.classList.add("hide");
 
-setTimeout(()=>{
+setTimeout(() => {
 
-card.remove();
+    card.classList.add("hide");
 
-},500);
+    setTimeout(() => {
 
-},6000);
+        card.remove();
+
+    }, 600);
+
+}, 30000); // Stay for 30 seconds
 
 }
   init();
