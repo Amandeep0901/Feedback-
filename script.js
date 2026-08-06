@@ -33,23 +33,41 @@ document.addEventListener("DOMContentLoaded", () => {
   const thanksName = document.getElementById("thanksName");
   const retryBtn = document.getElementById("retryBtn");
   const anotherBtn = document.getElementById("anotherBtn");
+    /* Live Reviews */
+const floatingReviews = document.getElementById("floatingReviews");
+const averageRating = document.getElementById("averageRating");
+const totalReviews = document.getElementById("totalReviews");
 
   const state = { products: [], rating: 0 };
   let lastPayload = null;
 
   function init() {
-    setLinks();
-    initPills();
-    initStars();
-    initCharCounter();
-    form.addEventListener("submit", onSubmit);
-    retryBtn.addEventListener("click", () => {
-      errorCard.hidden = true;
-      feedbackCard.hidden = false;
-    });
-    anotherBtn.addEventListener("click", resetForm);
-  }
 
+    setLinks();
+
+    initPills();
+
+    initStars();
+
+    initCharCounter();
+
+    loadLiveReviews();
+
+    startFloatingReviews();
+
+    form.addEventListener("submit", onSubmit);
+
+    retryBtn.addEventListener("click", () => {
+
+        errorCard.hidden = true;
+        feedbackCard.hidden = false;
+
+    });
+
+    anotherBtn.addEventListener("click", resetForm);
+
+}
+    
   /* ── LINKS ── */
   function setLinks() {
     const waURL = "https://wa.me/" + CONFIG.whatsappNumber + "?text=" + encodeURIComponent(CONFIG.whatsappMessage);
@@ -238,6 +256,129 @@ document.addEventListener("DOMContentLoaded", () => {
     if (/Tablet|iPad/i.test(ua)) return "Tablet";
     return "Desktop";
   }
+    
+/* =====================================================
+   DEMO LIVE REVIEWS
+===================================================== */
 
+const reviews = [
+
+{
+name:"Rahul",
+rating:5,
+message:"Amazing taste. Will order again."
+},
+
+{
+name:"Priya",
+rating:5,
+message:"Best Beat Coffee I've had."
+},
+
+{
+name:"Mohit",
+rating:4,
+message:"Loved the Mango syrup."
+},
+
+{
+name:"Sneha",
+rating:5,
+message:"Packaging was premium."
+},
+
+{
+name:"Aman",
+rating:5,
+message:"Highly recommended!"
+},
+
+{
+name:"Ritika",
+rating:5,
+message:"Rose syrup is delicious."
+},
+
+{
+name:"Karan",
+rating:4,
+message:"Good quality and fast delivery."
+}
+
+];
+
+function loadLiveReviews(){
+
+averageRating.textContent="4.9";
+
+totalReviews.textContent="1284";
+
+}
+
+function startFloatingReviews(){
+
+if(!floatingReviews) return;
+
+setInterval(()=>{
+
+if(floatingReviews.children.length>=5) return;
+
+spawnReview();
+
+},2500);
+
+}
+
+function spawnReview(){
+
+const data=reviews[Math.floor(Math.random()*reviews.length)];
+
+const card=document.createElement("div");
+
+card.className="review-popup";
+
+card.style.left=Math.random()*70+5+"%";
+
+card.style.top=Math.random()*70+10+"%";
+
+card.innerHTML=`
+
+<div class="review-top">
+
+<div class="review-name">${data.name}</div>
+
+<div class="review-time">Just now</div>
+
+</div>
+
+<div class="review-stars">
+
+${"★".repeat(data.rating)}
+
+</div>
+
+<div class="review-message">
+
+${data.message}
+
+</div>
+
+`;
+
+floatingReviews.appendChild(card);
+
+setTimeout(()=>{
+
+card.classList.add("hide");
+
+setTimeout(()=>{
+
+card.remove();
+
+},500);
+
+},6000);
+
+}
   init();
 });
