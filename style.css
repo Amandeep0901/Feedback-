@@ -872,39 +872,28 @@ a { color: inherit; }
 
 .footer-buttons{
 
-    flex-direction:column;
+    display:grid;
 
-    align-items:center;
+    grid-template-columns:repeat(2,1fr);
+
+    gap:12px;
+
+    width:100%;
 
 }
 
+
 .footer-btn{
 
-    display:flex;
+    width:100%;
 
-    align-items:center;
+    min-width:unset;
+
+    padding:12px;
+
+    font-size:.9rem;
 
     justify-content:center;
-
-    gap:10px;
-
-    padding:13px 24px;
-
-    border-radius:999px;
-
-    text-decoration:none;
-
-    background:#FFFDF8;
-
-    color:var(--espresso);
-
-    border:2px solid #ddd;
-
-    font-weight:600;
-
-    transition:.3s ease;
-
-    min-width:170px;
 
 }
 
