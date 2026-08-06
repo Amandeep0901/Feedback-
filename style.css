@@ -1,0 +1,456 @@
+/* ═══════════════════════════════════════════════════════════════
+   FOUJI BEAT COFFEE — Feedback Website
+   Palette sampled directly from the brand's own logo & packaging:
+   red #E51400 (logo mug), espresso #1C1712 (logo type),
+   gold #E8B860 (tub foil lid), plus real flavour cap colors.
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  --red:          #E51400;
+  --red-dark:     #B81000;
+  --espresso:     #1C1712;
+  --coffee-deep:  #3D2317;
+  --cream:        #FBF3E7;
+  --card:         #FFFFFF;
+  --line:         #EDE1D0;
+  --gold:         #E8B860;
+  --text:         #211A15;
+  --text-soft:    #6B5D51;
+  --text-faint:   #9C8E80;
+  --success:      #2D7A3C;
+  --error:        #C1291B;
+
+  --font-display: 'Baloo 2', sans-serif;
+  --font-body:    'Work Sans', -apple-system, sans-serif;
+
+  --sp-1: 6px; --sp-2: 12px; --sp-3: 18px; --sp-4: 24px;
+  --sp-5: 32px; --sp-6: 48px; --sp-7: 64px;
+
+  --radius-s: 10px; --radius-m: 16px; --radius-l: 26px; --radius-pill: 999px;
+  --shadow-card: 0 20px 50px -18px rgba(28,23,18,0.28);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
+body {
+  font-family: var(--font-body);
+  background: var(--cream);
+  color: var(--text);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width:100%; display:block; }
+button { font-family: inherit; border:none; background:none; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+input, textarea { font-family: inherit; }
+a { color: inherit; }
+
+/* ── HERO ─────────────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  min-height: 88svh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.hero-photo {
+  position: absolute;
+  inset: 0;
+  background-image: url('assets/hero-coffee.jpg');
+  background-size: cover;
+  background-position: 62% 30%;
+}
+
+.hero-scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 60% at 50% 0%, rgba(10, 6, 4, 0.62) 0%, rgba(10, 6, 4, 0.34) 45%, rgba(10, 6, 4, 0) 75%),
+    linear-gradient(
+      180deg,
+      rgba(20, 14, 10, 0.4) 0%,
+      rgba(20, 14, 10, 0.08) 30%,
+      rgba(20, 14, 10, 0.05) 55%,
+      rgba(20, 14, 10, 0.4) 100%
+    );
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-5);
+  padding: var(--sp-6) var(--sp-4) var(--sp-7);
+  text-align: center;
+  width: 100%;
+  max-width: 480px;
+}
+
+.hero-logo {
+  width: min(80vw, 380px);
+  filter: drop-shadow(0 3px 10px rgba(0,0,0,0.55)) drop-shadow(0 1px 3px rgba(0,0,0,0.6));
+  animation: heroIn 0.9s var(--ease) both;
+}
+
+.hero-cta {
+  animation: heroIn 0.9s var(--ease) 0.15s both;
+}
+
+@keyframes heroIn {
+  from { opacity:0; transform: translateY(16px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+/* ── BUTTONS ──────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.05rem;
+  padding: 16px 30px;
+  border-radius: var(--radius-pill);
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), background 0.2s var(--ease);
+}
+
+.btn-cta {
+  background: var(--red);
+  color: #fff;
+  box-shadow: 0 14px 30px -8px rgba(229,20,0,0.55);
+}
+.btn-cta:hover { background: var(--red-dark); transform: translateY(-2px); box-shadow: 0 18px 36px -8px rgba(229,20,0,0.6); }
+.btn-cta:active { transform: translateY(0); }
+
+.btn-submit {
+  width: 100%;
+  background: linear-gradient(135deg, var(--espresso) 0%, var(--coffee-deep) 100%);
+  color: #fff;
+  position: relative;
+  margin-top: var(--sp-2);
+}
+.btn-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 16px 32px -10px rgba(28,23,18,0.5); }
+.btn-submit:disabled { opacity: 0.75; cursor: not-allowed; }
+
+.btn-outline {
+  background: transparent;
+  color: var(--espresso);
+  border: 2px solid var(--line);
+}
+.btn-outline:hover { border-color: var(--espresso); background: var(--cream); }
+
+.btn-label { transition: opacity 0.15s; }
+.btn-spinner {
+  display: none;
+  width: 18px; height: 18px;
+  border: 2.5px solid rgba(255,255,255,0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+}
+.btn-submit:disabled .btn-label { opacity: 0; position: absolute; }
+.btn-submit:disabled .btn-spinner { display: block; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── WHISK DIVIDER (signature element) ───────────────────────── */
+.whisk-divider {
+  position: relative;
+  z-index: 2;
+  background: var(--cream);
+  margin-top: -28px;
+  border-radius: 28px 28px 0 0;
+  padding-top: 14px;
+}
+.whisk-divider svg {
+  display: block;
+  width: 100%;
+  height: 34px;
+}
+.whisk-path {
+  fill: none;
+  stroke: var(--red);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-dasharray: 620;
+  stroke-dashoffset: 620;
+  animation: drawWhisk 1.6s var(--ease) 0.3s forwards;
+}
+@keyframes drawWhisk { to { stroke-dashoffset: 0; } }
+
+/* ── FEEDBACK SECTION ─────────────────────────────────────────── */
+.feedback-wrap {
+  background: var(--cream);
+  padding: var(--sp-2) var(--sp-4) var(--sp-7);
+  display: flex;
+  justify-content: center;
+}
+
+.feedback-card {
+  width: 100%;
+  max-width: 520px;
+  background: var(--card);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-card);
+  padding: var(--sp-5) var(--sp-4);
+}
+
+@media (min-width: 560px) {
+  .feedback-card { padding: var(--sp-6); }
+}
+
+.eyebrow {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: var(--sp-2);
+}
+
+.feedback-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.6rem, 6vw, 2.1rem);
+  color: var(--espresso);
+  margin-bottom: var(--sp-2);
+  line-height: 1.15;
+}
+
+.feedback-sub {
+  color: var(--text-soft);
+  font-size: 0.95rem;
+  margin-bottom: var(--sp-5);
+  max-width: 40ch;
+}
+
+/* ── FORM FIELDS ──────────────────────────────────────────────── */
+#feedbackForm { display: flex; flex-direction: column; gap: var(--sp-4); }
+
+.field { display: flex; flex-direction: column; gap: var(--sp-1); }
+
+.field label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+.optional { font-weight: 400; color: var(--text-faint); font-size: 0.82rem; }
+
+.field input[type="text"],
+.field input[type="tel"],
+.field textarea {
+  padding: 14px 16px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-s);
+  font-size: 1rem;
+  background: var(--cream);
+  color: var(--text);
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--red);
+  box-shadow: 0 0 0 4px rgba(229,20,0,0.1);
+  background: #fff;
+}
+.field textarea { resize: vertical; min-height: 96px; }
+
+.char-count { align-self: flex-end; font-size: 0.78rem; color: var(--text-faint); }
+
+.field-error {
+  font-size: 0.82rem;
+  color: var(--error);
+  font-weight: 600;
+  min-height: 18px;
+}
+
+/* Product pills — dot color is sampled from the real bottle caps */
+.pill-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-pill);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-soft);
+  background: var(--cream);
+  transition: all 0.15s var(--ease);
+}
+.pill-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: var(--dot);
+  flex-shrink: 0;
+}
+.pill:hover { border-color: var(--dot); }
+.pill.selected {
+  background: var(--espresso);
+  border-color: var(--espresso);
+  color: #fff;
+}
+.pill.selected .pill-dot { box-shadow: 0 0 0 2px rgba(255,255,255,0.5); }
+
+/* Stars */
+.stars {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.star {
+  font-size: 2.1rem;
+  line-height: 1;
+  color: var(--line);
+  transition: transform 0.15s var(--ease), color 0.15s;
+}
+.star:hover { transform: scale(1.15); color: var(--gold); }
+.star.active { color: var(--gold); }
+.star-label {
+  margin-left: var(--sp-2);
+  font-size: 0.85rem;
+  color: var(--text-faint);
+}
+
+.disclaimer {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--text-faint);
+}
+
+/* ── SUCCESS / ERROR CARDS ────────────────────────────────────── */
+.success-card, .error-card { text-align: center; animation: cardIn 0.5s var(--ease); }
+@keyframes cardIn { from { opacity:0; transform: scale(0.96); } to { opacity:1; transform: scale(1); } }
+
+.checkmark {
+  width: 76px; height: 76px;
+  margin: 0 auto var(--sp-4);
+  background: rgba(45,122,60,0.1);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.checkmark svg { width: 42px; height: 42px; }
+.check-circle {
+  fill: none; stroke: var(--success); stroke-width: 2.5;
+  stroke-dasharray: 152; stroke-dashoffset: 152;
+  animation: circ 0.5s var(--ease) 0.1s forwards;
+}
+.check-path {
+  fill: none; stroke: var(--success); stroke-width: 3;
+  stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 40; stroke-dashoffset: 40;
+  animation: chk 0.4s var(--ease) 0.45s forwards;
+}
+@keyframes circ { to { stroke-dashoffset: 0; } }
+@keyframes chk { to { stroke-dashoffset: 0; } }
+
+.social-row {
+  display: flex;
+  justify-content: center;
+  gap: var(--sp-2);
+  margin: var(--sp-4) 0 var(--sp-5);
+  flex-wrap: wrap;
+}
+.social-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: var(--radius-pill);
+  background: var(--cream);
+  border: 1.5px solid var(--line);
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+.social-btn:hover { border-color: var(--espresso); background: #fff; }
+
+/* ── LOADING / TOAST ──────────────────────────────────────────── */
+.loading-overlay {
+  position: fixed; inset: 0;
+  background: rgba(20,14,10,0.6);
+  backdrop-filter: blur(2px);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: var(--sp-3);
+  z-index: 1000;
+  color: #fff;
+  font-weight: 600;
+}
+.spinner {
+  width: 44px; height: 44px;
+  border: 3.5px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: -100px;
+  transform: translateX(-50%);
+  background: var(--espresso);
+  color: #fff;
+  padding: 14px 22px;
+  border-radius: var(--radius-s);
+  font-size: 0.9rem;
+  font-weight: 600;
+  max-width: 90vw;
+  z-index: 999;
+  transition: bottom 0.3s var(--ease);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+}
+.toast.show { bottom: var(--sp-4); }
+
+/* ── FOOTER ───────────────────────────────────────────────────── */
+.footer {
+  text-align: center;
+  padding: var(--sp-6) var(--sp-4) var(--sp-6);
+  background: var(--espresso);
+  color: rgba(255,255,255,0.72);
+  font-size: 0.85rem;
+  line-height: 1.8;
+}
+.footer-brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #fff;
+  margin-bottom: var(--sp-2);
+}
+.footer a { color: var(--gold); font-weight: 600; }
+.footer-since { color: rgba(255,255,255,0.4); font-size: 0.78rem; margin-top: var(--sp-2); }
+
+/* ── ACCESSIBILITY ────────────────────────────────────────────── */
+:focus-visible { outline: 2.5px solid var(--red); outline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── RESPONSIVE ───────────────────────────────────────────────── */
+@media (max-width: 400px) {
+  .hero-logo { width: 86vw; }
+  .btn { font-size: 1rem; padding: 15px 26px; }
+  .feedback-title { font-size: 1.5rem; }
+}
+
+@media (min-width: 900px) {
+  .hero-photo { background-position: 60% 25%; }
+  .feedback-card { padding: var(--sp-7); }
+}
