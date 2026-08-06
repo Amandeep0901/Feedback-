@@ -527,28 +527,27 @@ a { color: inherit; }
 
     width:310px;
 
-    background:#fff;
-
-    border-radius:22px;
-
     padding:18px;
 
-    box-shadow:
-    0 25px 60px rgba(0,0,0,.18);
+    background:rgba(255,255,255,.92);
 
-    border:1px solid rgba(255,255,255,.55);
+    backdrop-filter:blur(18px);
 
-    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(18px);
 
-    animation:
-    popupIn .6s var(--ease),
-    popupOut .6s var(--ease) forwards;
+    border-radius:24px;
+
+    border:1px solid rgba(255,255,255,.45);
+
+    box-shadow:0 15px 45px rgba(0,0,0,.16);
+
+    animation:popupIn .6s var(--ease);
 
 }
 
 .review-popup.hide{
 
-    animation:popupOut .5s forwards;
+    animation:popupOut .6s forwards;
 
 }
 
@@ -601,6 +600,33 @@ a { color: inherit; }
     font-size:.88rem;
 
 }
+.review-name{
+
+    font-weight:700;
+
+    color:#222;
+
+    font-size:.95rem;
+
+}
+
+.review-time{
+
+    color:#888;
+
+    font-size:.72rem;
+
+}
+
+.review-message{
+
+    color:#555;
+
+    line-height:1.5;
+
+    margin-top:6px;
+
+}
 
 @keyframes popupIn{
 
@@ -608,7 +634,7 @@ a { color: inherit; }
 
         opacity:0;
 
-        transform:translateY(40px) scale(.85);
+        transform:translateY(30px) scale(.92);
 
     }
 
@@ -622,13 +648,21 @@ a { color: inherit; }
 
 }
 
-@keyframes popupOut{
+@@keyframes popupOut{
+
+    from{
+
+        opacity:1;
+
+        transform:translateY(0) scale(1);
+
+    }
 
     to{
 
         opacity:0;
 
-        transform:translateY(-25px) scale(.92);
+        transform:translateY(-20px) scale(.96);
 
     }
 
