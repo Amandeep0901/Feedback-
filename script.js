@@ -288,33 +288,40 @@ document.addEventListener("DOMContentLoaded", () => {
     "3 min ago", "5 min ago", "8 min ago",
   ];
 
+  // Track which reviews have been shown to avoid repetition
+  let reviewQueue = [];
+
+  function getNextReview() {
+    // Rebuild shuffled queue when empty
+    if (reviewQueue.length === 0) {
+      reviewQueue = [...DEMO_REVIEWS].sort(() => Math.random() - 0.5);
+    }
+    return reviewQueue.pop();
+  }
+
   function startFloatingReviews() {
     if (!floatingReviews) return;
-    // Show first popup after 3s, then every 8s
+
+    // Don't show popups over the form — only show in hero area
+    // Popups are positioned in bottom-right corner, non-intrusive
     setTimeout(() => {
       spawnReview();
-      setInterval(() => {
-        // Max 3 popups at once
-        if (floatingReviews.querySelectorAll(".review-popup").length < 3) {
-          spawnReview();
-        }
-      }, 8000);
-    }, 3000);
+      setInterval(spawnReview, 10000);
+    }, 4000);
   }
 
   function spawnReview() {
     if (!floatingReviews) return;
 
-    const data       = DEMO_REVIEWS[Math.floor(Math.random() * DEMO_REVIEWS.length)];
+    // Max 2 popups visible at once
+    if (floatingReviews.querySelectorAll(".review-popup").length >= 2) return;
+
+    const data       = getNextReview();
     const randomTime = TIMES[Math.floor(Math.random() * TIMES.length)];
     const stars      = "★".repeat(data.rating) + "☆".repeat(5 - data.rating);
 
     const card = document.createElement("div");
     card.className = "review-popup";
-
-    // Position randomly but avoid extreme edges
-    card.style.left = (Math.random() * 60 + 5) + "%";
-    card.style.top  = (Math.random() * 55 + 15) + "%";
 
     card.innerHTML = `
       <div class="review-top">
@@ -327,11 +334,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     floatingReviews.appendChild(card);
 
-    // Auto-remove after 10s
+    // Auto-remove after 8s
     setTimeout(() => {
       card.classList.add("hide");
       setTimeout(() => card.remove(), 600);
-    }, 10000);
+    }, 8000);
   }
 
   function escHtml(str) {
