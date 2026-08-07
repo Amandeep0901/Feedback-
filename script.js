@@ -2,7 +2,7 @@
     FOUJI BEAT COFFEE — script.js
     Multi-select product pills, single star rating,
     Google Sheets submission, success screen,
-    floating live review popups
+    review ribbon marquee, post-submit floating popups
 =========================================================*/
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -18,27 +18,29 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   /* ── DOM ── */
-  const form           = document.getElementById("feedbackForm");
-  const submitBtn      = document.getElementById("submitBtn");
-  const feedbackCard   = document.getElementById("feedbackCard");
-  const successCard    = document.getElementById("successCard");
-  const errorCard      = document.getElementById("errorCard");
-  const loadingOverlay = document.getElementById("loadingOverlay");
-  const toast          = document.getElementById("toast");
-  const commentInput   = document.getElementById("comment");
-  const charCount      = document.getElementById("charCount");
-  const productHidden  = document.getElementById("product");
-  const ratingHidden   = document.getElementById("rating");
-  const nameInput      = document.getElementById("name");
-  const phoneInput     = document.getElementById("phone");
-  const thanksName     = document.getElementById("thanksName");
-  const retryBtn       = document.getElementById("retryBtn");
-  const anotherBtn     = document.getElementById("anotherBtn");
+  const form            = document.getElementById("feedbackForm");
+  const submitBtn       = document.getElementById("submitBtn");
+  const feedbackCard    = document.getElementById("feedbackCard");
+  const successCard     = document.getElementById("successCard");
+  const errorCard       = document.getElementById("errorCard");
+  const loadingOverlay  = document.getElementById("loadingOverlay");
+  const toast           = document.getElementById("toast");
+  const commentInput    = document.getElementById("comment");
+  const charCount       = document.getElementById("charCount");
+  const productHidden   = document.getElementById("product");
+  const ratingHidden    = document.getElementById("rating");
+  const nameInput       = document.getElementById("name");
+  const phoneInput      = document.getElementById("phone");
+  const thanksName      = document.getElementById("thanksName");
+  const retryBtn        = document.getElementById("retryBtn");
+  const anotherBtn      = document.getElementById("anotherBtn");
   const floatingReviews = document.getElementById("floatingReviews");
-  const averageRating  = document.getElementById("averageRating");
-  const totalReviews   = document.getElementById("totalReviews");
+  const averageRating   = document.getElementById("averageRating");
+  const totalReviews    = document.getElementById("totalReviews");
+  const ribbonTrack      = document.getElementById("ribbonTrack");
 
   const state = { products: [], rating: 0 };
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* ════════════════════════════════════════════
      INIT
@@ -49,7 +51,9 @@ document.addEventListener("DOMContentLoaded", () => {
     initStars();
     initCharCounter();
     loadLiveReviews();
-    startFloatingReviews();
+    renderRibbon();
+    // Floating "iPhone style" review popups only start AFTER
+    // this visitor submits their own feedback — see showSuccess().
 
     form.addEventListener("submit", onSubmit);
 
@@ -206,6 +210,10 @@ document.addEventListener("DOMContentLoaded", () => {
     thanksName.textContent = name ? ", " + name.split(" ")[0] : "";
     successCard.hidden = false;
     successCard.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    // Live review popups start appearing only once this visitor
+    // has shared their own feedback.
+    startFloatingReviews();
   }
 
   function resetForm() {
@@ -253,12 +261,10 @@ document.addEventListener("DOMContentLoaded", () => {
      LIVE REVIEWS — rating summary
   ════════════════════════════════════════════ */
   function loadLiveReviews() {
-    // Static seed values shown instantly
-    // These update dynamically when real data loads
+    // Seed values shown instantly, replaced once real data loads
     if (averageRating) averageRating.textContent = "4.9";
     if (totalReviews)  totalReviews.textContent  = "1,284";
 
-    // Optionally fetch live from Apps Script
     if (!CONFIG.enableGoogleSheets) return;
     fetch(CONFIG.appsScriptUrl + "?action=getStats")
       .then(r => r.json())
@@ -270,44 +276,77 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ════════════════════════════════════════════
-     FLOATING LIVE REVIEW POPUPS
+     REVIEWS DATA — real customer reviews first,
+     representative ones fill out the set. Shared
+     by both the ribbon marquee and the floating
+     popups so there's one source of truth.
   ════════════════════════════════════════════ */
-  const DEMO_REVIEWS = [
-    { name: "Rahul",   rating: 5, message: "Amazing taste. Will order again!" },
-    { name: "Priya",   rating: 5, message: "Best Beat Coffee I've ever had." },
-    { name: "Mohit",   rating: 4, message: "Loved the Mango syrup — so refreshing." },
-    { name: "Sneha",   rating: 5, message: "The Rose syrup is absolutely divine!" },
-    { name: "Arjun",   rating: 5, message: "Fouji coffee is now part of my daily routine." },
-    { name: "Nisha",   rating: 4, message: "Great flavours, fast delivery too!" },
-    { name: "Vikram",  rating: 5, message: "Jaljeera syrup is a game changer." },
-    { name: "Kavita",  rating: 5, message: "My whole family loves the syrups!" },
+  const REVIEWS = [
+    { name: "Heena",  rating: 5, product: "Beat Coffee",  message: "Must try" },
+    { name: "Hema",   rating: 5, product: "Shikanji Syrup", message: "Wow product!" },
+    { name: "Sher",   rating: 5, product: "Beat Coffee, Rose, Shikanji, Jaljeera, Strawberry & Mango Syrup", message: "Sher khush hua" },
+    { name: "Khushi", rating: 3, product: "Beat Coffee", message: "Excellent" },
+    { name: "Rahul",  rating: 5, product: "Beat Coffee", message: "Amazing taste. Will order again!" },
+    { name: "Priya",  rating: 5, product: "Beat Coffee", message: "Best Beat Coffee I've ever had." },
+    { name: "Mohit",  rating: 4, product: "Mango Syrup", message: "Loved the Mango syrup — so refreshing." },
+    { name: "Sneha",  rating: 5, product: "Rose Syrup", message: "The Rose syrup is absolutely divine!" },
+    { name: "Arjun",  rating: 5, product: "Beat Coffee", message: "Fouji coffee is now part of my daily routine." },
+    { name: "Nisha",  rating: 4, product: "Shikanji Syrup", message: "Great flavours, fast delivery too!" },
+    { name: "Vikram", rating: 5, product: "Jaljeera Syrup", message: "Jaljeera syrup is a game changer." },
+    { name: "Kavita", rating: 5, product: "Strawberry Syrup", message: "My whole family loves the syrups!" },
   ];
 
-  const TIMES = [
-    "Just now", "1 min ago", "2 min ago",
-    "3 min ago", "5 min ago", "8 min ago",
-  ];
+  /* ════════════════════════════════════════════
+     REVIEW RIBBON — continuous right-to-left marquee
+  ════════════════════════════════════════════ */
+  function renderRibbon() {
+    if (!ribbonTrack) return;
 
-  // Track which reviews have been shown to avoid repetition
+    const chips = REVIEWS.map((r) => {
+      const stars = "★".repeat(r.rating) + "☆".repeat(5 - r.rating);
+      return `<span class="ribbon-chip">
+        <span class="ribbon-stars">${stars}</span>
+        <strong>${escHtml(r.name)}</strong>
+        <span>“${escHtml(r.message)}”</span>
+        <span class="ribbon-sep">•</span>
+      </span>`;
+    }).join("");
+
+    // Duplicate the set so the marquee loops seamlessly (translateX -50%)
+    ribbonTrack.innerHTML = chips + chips;
+
+    if (prefersReducedMotion) {
+      ribbonTrack.style.animation = "none";
+    }
+  }
+
+  /* ════════════════════════════════════════════
+     FLOATING LIVE REVIEW POPUPS
+     Starts only after the visitor submits their
+     own feedback (see showSuccess above).
+  ════════════════════════════════════════════ */
+  const TIMES = ["Just now", "1 min ago", "2 min ago", "3 min ago", "5 min ago", "8 min ago"];
+
   let reviewQueue = [];
+  let floatingStarted = false;
 
   function getNextReview() {
-    // Rebuild shuffled queue when empty
     if (reviewQueue.length === 0) {
-      reviewQueue = [...DEMO_REVIEWS].sort(() => Math.random() - 0.5);
+      reviewQueue = [...REVIEWS].sort(() => Math.random() - 0.5);
     }
     return reviewQueue.pop();
   }
 
   function startFloatingReviews() {
-    if (!floatingReviews) return;
+    if (!floatingReviews || floatingStarted) return;
+    floatingStarted = true;
 
-    // Don't show popups over the form — only show in hero area
-    // Popups are positioned in bottom-right corner, non-intrusive
+    if (prefersReducedMotion) return; // skip ambient motion entirely
+
     setTimeout(() => {
       spawnReview();
       setInterval(spawnReview, 10000);
-    }, 4000);
+    }, 1500);
   }
 
   function spawnReview() {
@@ -334,7 +373,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     floatingReviews.appendChild(card);
 
-    // Auto-remove after 8s
     setTimeout(() => {
       card.classList.add("hide");
       setTimeout(() => card.remove(), 600);
