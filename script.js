@@ -1,7 +1,8 @@
 /*=========================================================
     FOUJI BEAT COFFEE — script.js
     Multi-select product pills, single star rating,
-    Google Sheets submission, success screen
+    Google Sheets submission, success screen,
+    floating live review popups
 =========================================================*/
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -17,60 +18,53 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   /* ── DOM ── */
-  const form = document.getElementById("feedbackForm");
-  const submitBtn = document.getElementById("submitBtn");
-  const feedbackCard = document.getElementById("feedbackCard");
-  const successCard = document.getElementById("successCard");
-  const errorCard = document.getElementById("errorCard");
+  const form           = document.getElementById("feedbackForm");
+  const submitBtn      = document.getElementById("submitBtn");
+  const feedbackCard   = document.getElementById("feedbackCard");
+  const successCard    = document.getElementById("successCard");
+  const errorCard      = document.getElementById("errorCard");
   const loadingOverlay = document.getElementById("loadingOverlay");
-  const toast = document.getElementById("toast");
-  const commentInput = document.getElementById("comment");
-  const charCount = document.getElementById("charCount");
-  const productHidden = document.getElementById("product");
-  const ratingHidden = document.getElementById("rating");
-  const nameInput = document.getElementById("name");
-  const phoneInput = document.getElementById("phone");
-  const thanksName = document.getElementById("thanksName");
-  const retryBtn = document.getElementById("retryBtn");
-  const anotherBtn = document.getElementById("anotherBtn");
-    /* Live Reviews */
-const floatingReviews = document.getElementById("floatingReviews");
-const averageRating = document.getElementById("averageRating");
-const totalReviews = document.getElementById("totalReviews");
+  const toast          = document.getElementById("toast");
+  const commentInput   = document.getElementById("comment");
+  const charCount      = document.getElementById("charCount");
+  const productHidden  = document.getElementById("product");
+  const ratingHidden   = document.getElementById("rating");
+  const nameInput      = document.getElementById("name");
+  const phoneInput     = document.getElementById("phone");
+  const thanksName     = document.getElementById("thanksName");
+  const retryBtn       = document.getElementById("retryBtn");
+  const anotherBtn     = document.getElementById("anotherBtn");
+  const floatingReviews = document.getElementById("floatingReviews");
+  const averageRating  = document.getElementById("averageRating");
+  const totalReviews   = document.getElementById("totalReviews");
 
   const state = { products: [], rating: 0 };
-  let lastPayload = null;
 
+  /* ════════════════════════════════════════════
+     INIT
+  ════════════════════════════════════════════ */
   function init() {
-
     setLinks();
-
     initPills();
-
     initStars();
-
     initCharCounter();
-
     loadLiveReviews();
-
     startFloatingReviews();
 
     form.addEventListener("submit", onSubmit);
 
     retryBtn.addEventListener("click", () => {
-
-        errorCard.hidden = true;
-        feedbackCard.hidden = false;
-
+      errorCard.hidden = true;
+      feedbackCard.hidden = false;
     });
 
     anotherBtn.addEventListener("click", resetForm);
+  }
 
-}
-    
   /* ── LINKS ── */
   function setLinks() {
-    const waURL = "https://wa.me/" + CONFIG.whatsappNumber + "?text=" + encodeURIComponent(CONFIG.whatsappMessage);
+    const waURL = "https://wa.me/" + CONFIG.whatsappNumber +
+      "?text=" + encodeURIComponent(CONFIG.whatsappMessage);
     const ig = document.getElementById("instagramLink");
     const wa = document.getElementById("whatsappLink");
     if (ig) ig.href = CONFIG.instagramUrl;
@@ -144,12 +138,12 @@ const totalReviews = document.getElementById("totalReviews");
     if (state.products.length === 0) {
       setError("errProduct", "Pick at least one product.");
       ok = false;
-    }
+    } else setError("errProduct", "");
 
     if (state.rating === 0) {
       setError("errRating", "Please rate your experience.");
       ok = false;
-    }
+    } else setError("errRating", "");
 
     return ok;
   }
@@ -162,9 +156,12 @@ const totalReviews = document.getElementById("totalReviews");
   /* ── SUBMIT ── */
   async function onSubmit(e) {
     e.preventDefault();
+
     if (!validate()) {
       const firstError = document.querySelector(".field-error:not(:empty)");
-      if (firstError) firstError.closest(".field")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (firstError) {
+        firstError.closest(".field")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
       return;
     }
 
@@ -173,30 +170,27 @@ const totalReviews = document.getElementById("totalReviews");
 
     const ua = navigator.userAgent;
     const payload = {
-      name: nameInput.value.trim(),
-      phone: phoneInput.value.trim(),
+      name:    nameInput.value.trim(),
+      phone:   phoneInput.value.trim(),
       product: state.products.join(", "),
-      rating: state.rating,
+      rating:  state.rating,
       comment: commentInput.value.trim(),
       browser: getBrowser(ua),
-      device: getDevice(ua),
+      device:  getDevice(ua),
     };
-    lastPayload = payload;
 
-    let success = true;
     if (CONFIG.enableGoogleSheets) {
       try {
         const body = new URLSearchParams();
         Object.entries(payload).forEach(([k, v]) => body.append(k, String(v)));
         await fetch(CONFIG.appsScriptUrl, {
-          method: "POST",
+          method:  "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: body.toString(),
-          mode: "no-cors",
+          body:    body.toString(),
+          mode:    "no-cors",
         });
       } catch (err) {
         console.warn("Sheet note:", err);
-        success = false;
       }
     }
 
@@ -204,12 +198,7 @@ const totalReviews = document.getElementById("totalReviews");
     loadingOverlay.hidden = true;
     submitBtn.disabled = false;
 
-    if (success) {
-      showSuccess(payload.name);
-    } else {
-      feedbackCard.hidden = true;
-      errorCard.hidden = false;
-    }
+    showSuccess(payload.name);
   }
 
   function showSuccess(name) {
@@ -225,14 +214,15 @@ const totalReviews = document.getElementById("totalReviews");
     state.rating = 0;
     document.querySelectorAll(".pill.selected").forEach((p) => p.classList.remove("selected"));
     document.querySelectorAll(".star.active").forEach((s) => s.classList.remove("active"));
-    document.getElementById("starLabel").textContent = "Tap to rate";
-    charCount.textContent = "0";
+    const lbl = document.getElementById("starLabel");
+    if (lbl) lbl.textContent = "Tap to rate";
+    if (charCount) charCount.textContent = "0";
     successCard.hidden = true;
     feedbackCard.hidden = false;
     feedbackCard.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  /* ── TOAST (kept for future use) ── */
+  /* ── TOAST ── */
   function showToast(msg) {
     if (!toast) return;
     toast.textContent = msg;
@@ -243,158 +233,113 @@ const totalReviews = document.getElementById("totalReviews");
 
   /* ── HELPERS ── */
   function delay(ms) { return new Promise((r) => setTimeout(r, ms)); }
+
   function getBrowser(ua) {
-    if (ua.includes("Edg")) return "Edge";
-    if (ua.includes("OPR")) return "Opera";
-    if (ua.includes("Chrome")) return "Chrome";
+    if (ua.includes("Edg"))     return "Edge";
+    if (ua.includes("OPR"))     return "Opera";
+    if (ua.includes("Chrome"))  return "Chrome";
     if (ua.includes("Firefox")) return "Firefox";
-    if (ua.includes("Safari")) return "Safari";
+    if (ua.includes("Safari"))  return "Safari";
     return "Other";
   }
+
   function getDevice(ua) {
     if (/Mobi|Android/i.test(ua)) return "Mobile";
-    if (/Tablet|iPad/i.test(ua)) return "Tablet";
+    if (/Tablet|iPad/i.test(ua))  return "Tablet";
     return "Desktop";
   }
-    
-/* =====================================================
-   DEMO LIVE REVIEWS
-===================================================== */
 
-const reviews = [
+  /* ════════════════════════════════════════════
+     LIVE REVIEWS — rating summary
+  ════════════════════════════════════════════ */
+  function loadLiveReviews() {
+    // Static seed values shown instantly
+    // These update dynamically when real data loads
+    if (averageRating) averageRating.textContent = "4.9";
+    if (totalReviews)  totalReviews.textContent  = "1,284";
 
-{
-name:"Rahul",
-rating:5,
-message:"Amazing taste. Will order again."
-},
+    // Optionally fetch live from Apps Script
+    if (!CONFIG.enableGoogleSheets) return;
+    fetch(CONFIG.appsScriptUrl + "?action=getStats")
+      .then(r => r.json())
+      .then(data => {
+        if (data.avgRating && averageRating) averageRating.textContent = parseFloat(data.avgRating).toFixed(1);
+        if (data.totalCount && totalReviews)  totalReviews.textContent  = Number(data.totalCount).toLocaleString();
+      })
+      .catch(() => { /* silently keep seed values */ });
+  }
 
-{
-name:"Priya",
-rating:5,
-message:"Best Beat Coffee I've had."
-},
+  /* ════════════════════════════════════════════
+     FLOATING LIVE REVIEW POPUPS
+  ════════════════════════════════════════════ */
+  const DEMO_REVIEWS = [
+    { name: "Rahul",   rating: 5, message: "Amazing taste. Will order again!" },
+    { name: "Priya",   rating: 5, message: "Best Beat Coffee I've ever had." },
+    { name: "Mohit",   rating: 4, message: "Loved the Mango syrup — so refreshing." },
+    { name: "Sneha",   rating: 5, message: "The Rose syrup is absolutely divine!" },
+    { name: "Arjun",   rating: 5, message: "Fouji coffee is now part of my daily routine." },
+    { name: "Nisha",   rating: 4, message: "Great flavours, fast delivery too!" },
+    { name: "Vikram",  rating: 5, message: "Jaljeera syrup is a game changer." },
+    { name: "Kavita",  rating: 5, message: "My whole family loves the syrups!" },
+  ];
 
-{
-name:"Mohit",
-rating:4,
-message:"Loved the Mango syrup."
-}
+  const TIMES = [
+    "Just now", "1 min ago", "2 min ago",
+    "3 min ago", "5 min ago", "8 min ago",
+  ];
 
-];
+  function startFloatingReviews() {
+    if (!floatingReviews) return;
+    // Show first popup after 3s, then every 8s
+    setTimeout(() => {
+      spawnReview();
+      setInterval(() => {
+        // Max 3 popups at once
+        if (floatingReviews.querySelectorAll(".review-popup").length < 3) {
+          spawnReview();
+        }
+      }, 8000);
+    }, 3000);
+  }
 
-/* ADD THIS HERE */
+  function spawnReview() {
+    if (!floatingReviews) return;
 
-const TIMES = [
-    "Just now",
-    "30 sec ago",
-    "1 min ago",
-    "2 min ago",
-    "5 min ago",
-    "8 min ago"
-];
-
-/* THEN THIS */
-
-function loadLiveReviews(){
-
-    averageRating.textContent = "4.9";
-    totalReviews.textContent = "1284";
-
-}
-
-function startFloatingReviews(){
-
-    if(!floatingReviews) return;
-
-    setInterval(()=>{
-
-        if(floatingReviews.children.length >= 5)
-            return;
-
-        spawnReview();
-
-    },8000);
-
-}
-
-/* spawnReview starts here */
-
-function spawnReview(){
-
-    const data = reviews[Math.floor(Math.random()*reviews.length)];
-
-    /* ADD THIS LINE */
-
-    const randomTime =
-        TIMES[Math.floor(Math.random()*TIMES.length)];
+    const data       = DEMO_REVIEWS[Math.floor(Math.random() * DEMO_REVIEWS.length)];
+    const randomTime = TIMES[Math.floor(Math.random() * TIMES.length)];
+    const stars      = "★".repeat(data.rating) + "☆".repeat(5 - data.rating);
 
     const card = document.createElement("div");
-
     card.className = "review-popup";
 
-    ...
+    // Position randomly but avoid extreme edges
+    card.style.left = (Math.random() * 60 + 5) + "%";
+    card.style.top  = (Math.random() * 55 + 15) + "%";
 
-    spawnReview();
+    card.innerHTML = `
+      <div class="review-top">
+        <div class="review-name">${escHtml(data.name)}</div>
+        <div class="review-time">${randomTime}</div>
+      </div>
+      <div class="review-stars">${stars}</div>
+      <div class="review-message">${escHtml(data.message)}</div>
+    `;
 
-}, 8000); // New review every 8 seconds
+    floatingReviews.appendChild(card);
 
-}
-
-function spawnReview(){
-
-const data=reviews[Math.floor(Math.random()*reviews.length)];
-
-const card=document.createElement("div");
-
-card.className="review-popup";
-
-card.style.left=Math.random()*70+5+"%";
-
-card.style.top=Math.random()*70+10+"%";
-
-card.innerHTML=`
-
-<div class="review-top">
-
-<div class="review-name">${data.name}</div>
-
-<div class="review-time">${randomTime}</div>
-
-</div>
-
-<div class="review-stars">
-
-${"★".repeat(data.rating)}
-
-</div>
-
-<div class="review-message">
-
-${data.message}
-
-</div>
-
-`;
-
-floatingReviews.appendChild(card);
-
-setTimeout(()=>{
-
-card.classList.add("hide");
-
-setTimeout(() => {
-
-    card.classList.add("hide");
-
+    // Auto-remove after 10s
     setTimeout(() => {
+      card.classList.add("hide");
+      setTimeout(() => card.remove(), 600);
+    }, 10000);
+  }
 
-        card.remove();
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
 
-    }, 600);
-
-}, 30000); // Stay for 30 seconds
-
-}
   init();
 });
