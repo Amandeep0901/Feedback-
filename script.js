@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ── CONFIG ── */
   const CONFIG = {
-    appsScriptUrl: "https://script.google.com/macros/s/AKfycbxDemQKaqUnDlXnr0VEt2pW98wg9CNnjIF7jueLFdtLRTSeeJayppUOQFVJOaYHk4EM/exec",
+    appsScriptUrl: "https://script.google.com/macros/s/AKfycbwWnYFznCmzObu-mrQL6Lc3jfJiu_uVo7LMYzYzZ7HveMBZ40FjBWcqObzuIG3-10f_/exec",
     enableGoogleSheets: true,
     instagramUrl: "https://www.instagram.com/fouji_beat_coffee_",
     whatsappNumber: "919896772868",
